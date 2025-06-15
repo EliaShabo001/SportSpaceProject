@@ -37,7 +37,7 @@ import {
   DialogTitle,
   CircularProgress,
 } from "@mui/material";
-import { getFieldById, getNearbyFields } from "../../services/fieldsService";
+
 // Date picker imports removed temporarily
 import { motion } from "framer-motion";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -83,111 +83,17 @@ const FieldDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch field details from Supabase
-    const fetchField = async () => {
+    // Load mock field data
+    const loadField = async () => {
       setLoading(true);
       try {
-        // Get field data from Supabase
-        const fieldData = await getFieldById(id);
+        // Simulate loading delay
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        if (!fieldData) {
-          setLoading(false);
-          return;
-        }
-
-        // Get nearby fields
-        const nearbyFieldsData = await getNearbyFields(id, 2);
-
-        // Transform field data to match our component's expected format
-        const transformedField = {
-          id: fieldData.Field_ID,
-          name: fieldData.Field_Name,
-          location: fieldData.Location,
-          description:
-            "A premium football field with excellent facilities, perfect for both casual games and competitive matches.",
-          hourlyRate: 50, // Default price until we implement pricing
-          capacity: fieldData.Capacity,
-          rating: 4.5, // Default rating until we implement reviews
-          reviewCount: 124, // Default until we implement reviews
-          images: [
-            `https://source.unsplash.com/random/800x600/?football,stadium,${id}`,
-            `https://source.unsplash.com/random/800x600/?soccer,field,${id}`,
-            `https://source.unsplash.com/random/800x600/?football,pitch,${id}`,
-            `https://source.unsplash.com/random/800x600/?stadium,grass,${id}`,
-          ],
-          amenities: [
-            { name: "Changing Rooms", icon: <ShowerIcon /> },
-            { name: "Parking", icon: <LocalParkingIcon /> },
-            { name: "WiFi", icon: <WifiIcon /> },
-            { name: "Cafeteria", icon: <RestaurantIcon /> },
-          ],
-          availabilityHours: "08:00-22:00",
-          owner: fieldData.Owner ? fieldData.Owner.Name : "Unknown Owner",
-          ownerContact: fieldData.Owner ? fieldData.Owner.Phone_Number : "N/A",
-          fieldType: fieldData.Field_Type,
-          reviews: [
-            {
-              id: 1,
-              user: "John Smith",
-              avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-              rating: 5,
-              date: "2023-05-15",
-              comment:
-                "Excellent field with great facilities. The turf is well-maintained and the staff is very helpful.",
-            },
-            {
-              id: 2,
-              user: "Sarah Johnson",
-              avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-              rating: 4,
-              date: "2023-04-28",
-              comment:
-                "Good field, but the changing rooms could be cleaner. Otherwise, a great experience.",
-            },
-            {
-              id: 3,
-              user: "Michael Chen",
-              avatar: "https://randomuser.me/api/portraits/men/67.jpg",
-              rating: 5,
-              date: "2023-04-10",
-              comment:
-                "Perfect location and excellent playing surface. Will definitely book again!",
-            },
-          ],
-          nearbyFields: nearbyFieldsData.map((nearby) => ({
-            id: nearby.Field_ID,
-            name: nearby.Field_Name,
-            image: `https://source.unsplash.com/random/400x300/?football,${nearby.Field_ID}`,
-            location: nearby.Location,
-            price: "$50/hour",
-          })),
-          offers: fieldData.Offers
-            ? fieldData.Offers.map((offer) => ({
-                id: offer.Offer_ID,
-                description: offer.Descripyion,
-                discount: offer.DiscountPercenttag,
-                startDate: offer.Start_Date,
-                endDate: offer.End_Date,
-              }))
-            : [],
-          services: fieldData.Field_Services
-            ? fieldData.Field_Services.map((service) => ({
-                id: service.Field_Service_ID,
-                name: service.Services
-                  ? service.Services.Service_Name
-                  : "Unknown Service",
-                cost: service.Services ? service.Services.Service_Cost : 0,
-              }))
-            : [],
-        };
-
-        setField(transformedField);
-      } catch (error) {
-        console.error("Error fetching field:", error);
-        // Fallback to mock data in case of error
-        setField({
+        // Create mock field data based on the ID
+        const mockField = {
           id: parseInt(id),
-          name: "Downtown Stadium",
+          name: `Field ${id}`,
           location: "Central City, 123 Main St",
           description:
             "A premium football field with excellent facilities, perfect for both casual games and competitive matches.",
@@ -244,13 +150,17 @@ const FieldDetail = () => {
               price: "$55/hour",
             },
           ],
-        });
+        };
+
+        setField(mockField);
+      } catch (error) {
+        console.error("Error loading field:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchField();
+    loadField();
   }, [id]);
 
   const handleTabChange = (event, newValue) => {

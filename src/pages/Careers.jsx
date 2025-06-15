@@ -39,6 +39,7 @@ import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import SchoolIcon from "@mui/icons-material/School";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
+import "../App.css";
 
 // Animation variants
 const fadeIn = {
@@ -407,40 +408,39 @@ const Careers = () => {
 
       {/* Benefits Section */}
       <Box sx={{ bgcolor: "background.paper", py: 10 }}>
-        <Container maxWidth="lg">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+              textAlign: "center",
+            }}
           >
-            <Typography
-              variant="h2"
-              component="h2"
-              sx={{
-                fontWeight: 700,
-                mb: 2,
-                textAlign: "center",
-              }}
-            >
-              Benefits & Perks
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                maxWidth: 700,
-                mx: "auto",
-                textAlign: "center",
-                color: "text.secondary",
-                mb: 6,
-              }}
-            >
-              We take care of our team with competitive benefits and a great
-              work environment
-            </Typography>
-          </motion.div>
-
-          <Grid container spacing={4}>
+            Benefits & Perks
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              maxWidth: 700,
+              mx: "auto",
+              textAlign: "center",
+              color: "text.secondary",
+              mb: 6,
+            }}
+          >
+            We take care of our team with competitive benefits and a great work
+            environment
+          </Typography>
+        </motion.div>
+        <div className="ourvalue" style={{ margin: "20px" }}>
+          <Grid container spacing={4} gap={15}>
             {benefits.map((benefit, index) => (
               <Grid item xs={12} sm={6} key={index}>
                 <motion.div
@@ -482,7 +482,7 @@ const Careers = () => {
               </Grid>
             ))}
           </Grid>
-        </Container>
+        </div>
       </Box>
 
       {/* Open Positions Section */}

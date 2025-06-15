@@ -12,7 +12,7 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
-import { loginUser } from "../../services/authService";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -50,16 +50,9 @@ const Login = () => {
         // Set loading state
         setLoginError(null);
 
-        // Attempt to login the user with Supabase
-        const user = await loginUser(values.email, values.password);
-        console.log("Login successful:", user);
-
-        // Redirect to appropriate page based on user type
-        if (user.userType === "owner") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/fields");
-        }
+        // For now, just redirect to fields page
+        // TODO: Implement actual authentication logic
+        navigate("/fields");
       } catch (error) {
         // Show login error
         setLoginError(error.message);

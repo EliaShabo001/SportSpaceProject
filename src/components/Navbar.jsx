@@ -42,7 +42,6 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import Logo from "./Logo";
 import NotificationsPopover from "./NotificationsPopover";
 import SearchDialog from "./SearchDialog";
-
 // This component is now just a wrapper that doesn't hide the navbar
 function HideOnScroll(props) {
   const { children } = props;
@@ -93,6 +92,7 @@ const Navbar = ({ userRole = null }) => {
           { title: "Contact", path: "/contact", icon: <ContactSupportIcon /> },
           { title: "Careers", path: "/careers", icon: <WorkIcon /> },
           { title: "Blog", path: "/blog", icon: <ArticleIcon /> },
+            { title: "Offers", path: "/offerspage", icon: <LocalOfferIcon /> },
         ];
 
   const settings = userRole

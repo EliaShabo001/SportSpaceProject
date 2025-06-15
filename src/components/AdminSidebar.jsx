@@ -20,8 +20,7 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import StarIcon from "@mui/icons-material/Star";
 import LogoutIcon from "@mui/icons-material/Logout";
-import StorageIcon from "@mui/icons-material/Storage";
-import CloudIcon from "@mui/icons-material/Cloud";
+
 import Logo from "./Logo";
 
 const drawerWidth = 240;
@@ -37,16 +36,6 @@ const menuItems = [
   },
   { text: "Offers", icon: <LocalOfferIcon />, path: "/dashboard/offers" },
   { text: "Reviews", icon: <StarIcon />, path: "/dashboard/reviews" },
-  {
-    text: "Setup Database",
-    icon: <StorageIcon />,
-    path: "/dashboard/setup-database",
-  },
-  {
-    text: "Check Supabase",
-    icon: <CloudIcon />,
-    path: "/dashboard/check-supabase",
-  },
 ];
 
 const AdminSidebar = ({ open, onClose }) => {

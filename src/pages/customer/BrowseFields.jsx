@@ -25,6 +25,12 @@ import {
   useTheme,
   Paper,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -36,36 +42,37 @@ import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import ShowerIcon from "@mui/icons-material/Shower";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import WifiIcon from "@mui/icons-material/Wifi";
-import { getAllFields } from "../../services/fieldsService";
-import supabase from "../../services/supabaseClient";
+import AddIcon from "@mui/icons-material/Add";
+import axios from "axios";
 
 // Mock data for fields (fallback)
 const mockFields = [
   {
     id: 1,
     name: "Downtown Stadium",
-    image: "https://source.unsplash.com/random/600x400/?football,stadium",
+    image:
+      "https://th.bing.com/th/id/R.ecc6bc7b741647fc5c71e51be88abf49?rik=O%2bOuyvKLWYhSqQ&pid=ImgRaw&r=0",
     location: "Central City",
     rating: 4.8,
     price: 50,
     type: "Indoor",
     capacity: "5v5",
     amenities: ["Parking", "Showers", "Cafeteria"],
-    distance: 1.2,
+    distance: 2.5,
   },
   {
     id: 2,
     name: "Riverside Field",
-    image: "https://source.unsplash.com/random/600x400/?soccer,field",
+    image:
+      "https://th.bing.com/th/id/R.a39f49d1a7b9549315d72c072aadcc5b?rik=5s9bUTVpaHRSbw&riu=http%3a%2f%2fsilb.co.uk%2fwp-content%2fuploads%2f2016%2f10%2fWembley_enggermatch.jpg&ehk=LJBXen3buvHQpNhBXTZXyr7sDFBkCQfNlmTwl6ik%2bEk%3d&risl=&pid=ImgRaw&r=0",
     location: "Riverside District",
     rating: 4.6,
     price: 45,
     type: "Outdoor",
     capacity: "11v11",
     amenities: ["Parking", "Showers", "WiFi"],
-    distance: 2.5,
+    distance: 2.1,
   },
-  // Add more mock fields as needed
 ];
 
 const BrowseFields = () => {
@@ -78,102 +85,57 @@ const BrowseFields = () => {
   const [selectedCapacities, setSelectedCapacities] = useState([]);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [sortBy, setSortBy] = useState("recommended");
+  const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
 
   // State for fields data
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch fields from Supabase
+  // New field form state
+  const [newField, setNewField] = useState({
+    name: "",
+    image: "",
+    location: "",
+    price: "",
+    type: "",
+    capacity: "",
+    amenities: [],
+    distance: "",
+    rating: "",
+  });
+
+  // Load mock fields data
   useEffect(() => {
-    const fetchFields = async () => {
+    const loadFields = async () => {
       try {
         setLoading(true);
-        console.log("Fetching fields from Supabase...");
-
-        // First, check if the Field table exists
-        const { data: tableData, error: tableError } = await supabase
-          .from("information_schema.tables")
-          .select("table_name")
-          .eq("table_schema", "public")
-          .eq("table_name", "Field");
-
-        console.log("Table check result:", tableData, tableError);
-
-        if (tableError) {
-          console.error("Error checking for Field table:", tableError);
-          throw new Error("Database error: " + tableError.message);
-        }
-
-        if (!tableData || tableData.length === 0) {
-          console.error("Field table does not exist");
-          throw new Error(
-            "Database not set up. Please visit /dashboard/setup-database to set up the database."
-          );
-        }
-
-        // Now try to get the fields
-        const { data: fieldsData, error: fieldsError } = await supabase.from(
-          "Field"
-        ).select(`
-            *,
-            Owner (Name, Email, Phone_Number)
-          `);
-
-        console.log("Fields query result:", fieldsData, fieldsError);
-
-        if (fieldsError) {
-          console.error("Error fetching fields:", fieldsError);
-          throw new Error("Failed to fetch fields: " + fieldsError.message);
-        }
-
-        if (!fieldsData || fieldsData.length === 0) {
-          console.log("No fields found in database");
-          setFields(mockFields);
-          return;
-        }
-
-        // Transform data to match our expected format
-        const transformedFields = fieldsData.map((field) => ({
-          id: field.Field_ID,
-          name: field.Field_Name,
-          image: `https://source.unsplash.com/random/600x400/?football,field,${field.Field_ID}`,
-          location: field.Location,
-          rating: 4.5, // Default rating until we implement reviews
-          price: 50, // Default price until we implement pricing
-          type: field.Field_Type,
-          capacity:
-            field.Capacity <= 10
-              ? "5v5"
-              : field.Capacity <= 14
-              ? "7v7"
-              : "11v11",
-          amenities: ["Parking", "Showers"], // Default amenities
-          distance: 2.5, // Mock distance until we implement geolocation
-          owner: field.Owner ? field.Owner.Name : "Unknown Owner",
-        }));
-
-        console.log("Transformed fields:", transformedFields);
-        setFields(transformedFields);
-      } catch (err) {
-        console.error("Error fetching fields:", err);
-        setError(
-          err.message || "Failed to load fields. Please try again later."
-        );
-        // Fall back to mock data in case of error
+        // Simulate loading delay
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setFields(mockFields);
+      } catch (err) {
+        console.error("Error loading fields:", err);
+        setError("Failed to load fields. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFields();
+    loadFields();
   }, []);
 
+
+
   // Filter types
-  const fieldTypes = ["Indoor", "Outdoor"];
+  const fieldTypes = ["Indoor", "Outdoor", "Stadium"];
   const capacityTypes = ["5v5", "7v7", "11v11"];
-  const amenityTypes = ["Parking", "Showers", "Cafeteria", "WiFi"];
+  const amenityTypes = [
+    "Parking",
+    "Showers",
+    "WiFi",
+    "Cafeteria",
+    "Locker Rooms",
+  ];
 
   // Handle filter changes
   const handleTypeChange = (type) => {
@@ -202,6 +164,49 @@ const BrowseFields = () => {
     } else {
       setSelectedAmenities([...selectedAmenities, amenity]);
     }
+  };
+
+  // Handle new field form changes
+  const handleNewFieldChange = (e) => {
+    const { name, value } = e.target;
+    setNewField({
+      ...newField,
+      [name]: value,
+    });
+  };
+
+  const handleAmenityToggle = (amenity) => {
+    setNewField({
+      ...newField,
+      amenities: newField.amenities.includes(amenity)
+        ? newField.amenities.filter((a) => a !== amenity)
+        : [...newField.amenities, amenity],
+    });
+  };
+
+  // Add new field
+  const handleAddField = () => {
+    const fieldToAdd = {
+      ...newField,
+      id: Math.max(...fields.map((f) => f.id), 0) + 1,
+      rating: parseFloat(newField.rating),
+      price: parseFloat(newField.price),
+      distance: parseFloat(newField.distance),
+    };
+
+    setFields([...fields, fieldToAdd]);
+    setAddFieldDialogOpen(false);
+    setNewField({
+      name: "",
+      image: "",
+      location: "",
+      price: "",
+      type: "",
+      capacity: "",
+      amenities: [],
+      distance: "",
+      rating: "",
+    });
   };
 
   // Filter fields based on criteria
@@ -416,6 +421,7 @@ const BrowseFields = () => {
       </Button>
     </Box>
   );
+
   return (
     <Box
       sx={{ pt: 8, pb: 6, bgcolor: "background.default", minHeight: "100vh" }}
@@ -497,7 +503,7 @@ const BrowseFields = () => {
                     fullWidth
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    sx={{ maxWidth: { sm: "400px" } }}
+                    sx={{ width: { sm: "400px" } }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -522,6 +528,14 @@ const BrowseFields = () => {
                     >
                       Filters
                     </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                      onClick={() => setAddFieldDialogOpen(true)}
+                    >
+                      Add Field
+                    </Button>
                     <FormControl variant="outlined" size="small">
                       <TextField
                         select
@@ -532,7 +546,7 @@ const BrowseFields = () => {
                           native: true,
                         }}
                         variant="outlined"
-                        size="small"
+                        size="sm"
                       >
                         <option value="recommended">Recommended</option>
                         <option value="price-low">Price: Low to High</option>
@@ -622,6 +636,7 @@ const BrowseFields = () => {
                       <Grid item xs={12} sm={6} md={6} lg={4} key={field.id}>
                         <Card
                           sx={{
+                            width: "350px",
                             height: "100%",
                             display: "flex",
                             flexDirection: "column",
@@ -840,6 +855,145 @@ const BrowseFields = () => {
       >
         {filterContent}
       </Drawer>
+
+      {/* Add Field Dialog */}
+      <Dialog
+        open={addFieldDialogOpen}
+        onClose={() => setAddFieldDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Add New Football Field</DialogTitle>
+        <DialogContent>
+          <Box component="form" sx={{ mt: 2 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Field Name"
+              name="name"
+              value={newField.name}
+              onChange={handleNewFieldChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Image URL"
+              name="image"
+              value={newField.image}
+              onChange={handleNewFieldChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Location"
+              name="location"
+              value={newField.location}
+              onChange={handleNewFieldChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Price per hour"
+              name="price"
+              type="number"
+              value={newField.price}
+              onChange={handleNewFieldChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Distance (miles)"
+              name="distance"
+              type="number"
+              value={newField.distance}
+              onChange={handleNewFieldChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Rating (1-5)"
+              name="rating"
+              type="number"
+              inputProps={{ min: 1, max: 5, step: 0.1 }}
+              value={newField.rating}
+              onChange={handleNewFieldChange}
+            />
+            <FormControl fullWidth margin="normal">
+              <TextField
+                select
+                label="Field Type"
+                name="type"
+                value={newField.type}
+                onChange={handleNewFieldChange}
+              >
+                {fieldTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
+                select
+                label="Capacity"
+                name="capacity"
+                value={newField.capacity}
+                onChange={handleNewFieldChange}
+              >
+                {capacityTypes.map((capacity) => (
+                  <MenuItem key={capacity} value={capacity}>
+                    {capacity}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+            <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+              Amenities
+            </Typography>
+            <FormGroup>
+              {amenityTypes.map((amenity) => (
+                <FormControlLabel
+                  key={amenity}
+                  control={
+                    <Checkbox
+                      checked={newField.amenities.includes(amenity)}
+                      onChange={() => handleAmenityToggle(amenity)}
+                    />
+                  }
+                  label={
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      {getAmenityIcon(amenity)}
+                      <Typography sx={{ ml: 1 }}>{amenity}</Typography>
+                    </Box>
+                  }
+                />
+              ))}
+            </FormGroup>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAddFieldDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleAddField}
+            variant="contained"
+            disabled={
+              !newField.name ||
+              !newField.image ||
+              !newField.location ||
+              !newField.price
+            }
+          >
+            Add Field
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -15,7 +15,7 @@ import {
   FormControlLabel,
   Paper,
 } from "@mui/material";
-import { registerUser } from "../../services/authService";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -106,9 +106,8 @@ const Register = () => {
         // Clear any previous errors
         setRegisterError(null);
 
-        // Register the user using our Supabase auth service
+        // TODO: Implement actual registration logic
         console.log("Customer registration form submitted:", values);
-        await registerUser(values, "customer");
 
         // Show success message (in a real app)
         // setRegisterSuccess("Registration successful! You can now log in.");
@@ -123,14 +122,8 @@ const Register = () => {
         // Show error message
         console.error("Registration error:", error);
 
-        // Handle specific error cases
-        if (error.message.includes("Invalid API key")) {
-          setRegisterError(
-            "Database connection error. Please contact the administrator to check the Supabase API key."
-          );
-        } else {
-          setRegisterError(error.message);
-        }
+        // Handle error cases
+        setRegisterError(error.message);
       }
     },
   });
@@ -151,9 +144,8 @@ const Register = () => {
         // Clear any previous errors
         setRegisterError(null);
 
-        // Register the user using our Supabase auth service
+        // TODO: Implement actual registration logic
         console.log("Owner registration form submitted:", values);
-        await registerUser(values, "owner");
 
         // Show success message (in a real app)
         // setRegisterSuccess("Registration successful! You can now log in.");
