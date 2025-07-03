@@ -23,6 +23,7 @@ const SearchFilter = ({ setFilters }) => {
             onChange={(e) => setSearchType(e.target.value)} 
             className="glass-select"
           >
+          
             <MenuItem value="name">🔎 Search by Field Name</MenuItem>
             <MenuItem value="location">📍 Search by Location</MenuItem>
             <MenuItem value="date">📅 Search by Date</MenuItem>

@@ -12,19 +12,19 @@ const PriceFilter = ({ setMaxPrice }) => {
   return (
     <Box className="filterPrice"
       sx={{
-        backgroundColor: "#00809D",
         padding: 3,
         borderRadius: 2,
-        color: "#FCECDD",
+        color: "black",
+        backgroundColor:"aliceblue",
         boxShadow: 3,
-        width: "60%",
+        width: "80%",
         
       }}
     >
-      <Typography variant="h6" fontWeight="bold">
+      <Typography variant="h4" fontWeight="bold">
         Filter by Price
       </Typography>
-      <Typography variant="h4" fontWeight="bold">
+      <Typography variant="h3" fontWeight="bold">
         ${price}
       </Typography>
       <Slider
@@ -34,9 +34,8 @@ const PriceFilter = ({ setMaxPrice }) => {
         step={50}
         onChange={handleChange}
         sx={{
-          color: "white",
-          '& .MuiSlider-thumb': { backgroundColor: "white" },
-          '& .MuiSlider-track': { backgroundColor: "#fff" },
+          '& .MuiSlider-thumb': { backgroundColor: "f2a2a9" ,color:"f2a2a9" },
+          '& .MuiSlider-track': { backgroundColor: "#FF6A00" },
         }}
       />
     </Box>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+
 import {
   Box,
   TextField,
@@ -15,13 +16,16 @@ import {
   FormControlLabel,
   Paper,
 } from "@mui/material";
-
+import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import { jwtDecode } from 'jwt-decode';
+import "../../App.css"
 
 // Tab Panel component
 function TabPanel(props) {
@@ -83,6 +87,19 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registerError, setRegisterError] = useState(null);
+  const [userData, setUserData] = useState(null);
+const handleGoogleSuccess = (credentialResponse) => {
+  const decoded = jwtDecode(credentialResponse.credential);
+  console.log("Google User:", decoded);
+  alert(`أهلاً ${decoded.name} من Google`);
+  setUserData({
+    name: decoded.name,
+    email: decoded.email,
+    picture: decoded.picture,
+    provider: 'google',
+  });
+
+};
 
   // Check if user was redirected from subscription page
   const fromSubscription = location.state?.from === "/subscription";
@@ -394,39 +411,35 @@ const Register = () => {
             fullWidth
             variant="contained"
             color="primary"
-            size="large"
+            size="small"
             sx={{ mt: 3, mb: 3, py: 1.5 }}
           >
             Sign Up as Customer
           </Button>
         </form>
 
-        <Divider sx={{ my: 3 }}>
+        <Divider sx={{ my: 1 }}>
           <Typography variant="body2" color="text.secondary">
             OR
           </Typography>
         </Divider>
-
+    
         <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<GoogleIcon />}
-            sx={{ py: 1.5 }}
-          >
-            Google
-          </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            startIcon={<FacebookIcon />}
-            sx={{ py: 1.5 }}
-          >
-            Facebook
-          </Button>
+        <GoogleOAuthProvider clientId="642145349107-mvrf49cvb4s97ve4anb9rap3hciftd72.apps.googleusercontent.com">
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }} className="googleButton">
+        <GoogleLogin
+         theme="filled_"  
+           size="xlarge"
+          
+          onSuccess={handleGoogleSuccess}
+          onError={() => console.log("Google Login Failed")}
+        />
+      </Box>
+    </GoogleOAuthProvider>
+
+
         </Box>
       </TabPanel>
-
       {/* Field Owner Registration Form */}
       <TabPanel value={tabValue} index={1}>
         <form onSubmit={ownerFormik.handleSubmit}>
@@ -629,6 +642,14 @@ const Register = () => {
           </Typography>
         </Link>
       </Typography>
+      {userData && (
+  <div>
+    <p>مرحباً {userData.name}</p>
+    <p>البريد: {userData.email}</p>
+    <img src={userData.picture} alt="User" width={100} />
+    {/* لاحقًا يمكنك إرسال userData لـ API */}
+  </div>
+)}
     </Box>
   );
 };

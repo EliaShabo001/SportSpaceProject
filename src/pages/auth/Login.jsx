@@ -19,7 +19,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
-
+import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode';
 // Validation schema
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -34,7 +36,19 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState(null);
+  const [userData, setUserData] = useState(null);
+const handleGoogleSuccess = (credentialResponse) => {
+  const decoded = jwtDecode(credentialResponse.credential);
+  console.log("Google User:", decoded);
+  alert(`أهلاً ${decoded.name} من Google`);
+  setUserData({
+    name: decoded.name,
+    email: decoded.email,
+    picture: decoded.picture,
+    provider: 'google',
+  });
 
+};
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -181,23 +195,18 @@ const Login = () => {
         </Typography>
       </Divider>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<GoogleIcon />}
-          sx={{ py: 1.5 }}
-        >
-          Google
-        </Button>
-        <Button
-          fullWidth
-          variant="outlined"
-          startIcon={<FacebookIcon />}
-          sx={{ py: 1.5 }}
-        >
-          Facebook
-        </Button>
+       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+             <GoogleOAuthProvider clientId="642145349107-mvrf49cvb4s97ve4anb9rap3hciftd72.apps.googleusercontent.com">
+           <Box  sx={{ display: "flex", justifyContent: "center", mt: 10 }} className="googleButton">
+             <GoogleLogin 
+                theme="filled_"  
+            size="xx-large"
+               onSuccess={handleGoogleSuccess}
+               onError={() => console.log("Google Login Failed")}
+             />
+           </Box>
+         </GoogleOAuthProvider>
+
       </Box>
 
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>

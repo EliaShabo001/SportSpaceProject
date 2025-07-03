@@ -109,3 +109,20 @@
   display: flex !important;
     justify-content: space-around;
   }
+  .googleButton{
+    width: 500px !important;
+    padding: 10px;
+   
+  }
+  .offerButton{
+    background-color: rgb(255, 106, 0) !important;
+    
+  }
+  .offerLocation{
+font-size: 20px!important;
+
+  }
+  .offerPrice{
+font-size: 20px!important;
+
+  }
